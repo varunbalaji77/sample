@@ -1,93 +1,47 @@
-import pygame
 import random
 
-# Initialize pygame
-pygame.init()
+# Set up the deck of cards
+card_categories = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+cards_list = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
+deck = [(card, category) for category in card_categories for card in cards_list]
 
-# Set up display
-WIDTH, HEIGHT = 600, 400
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Snake Game")
+# Function to get the value of a card
+def card_value(card):
+    if card[0] in ['Jack', 'Queen', 'King']:
+        return 10
+    elif card[0] == 'Ace':
+        return 11
+    else:
+        return int(card[0])
 
-# Colors
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
+# Shuffle the deck
+random.shuffle(deck)
 
-# Snake properties
-BLOCK_SIZE = 20
-snake_speed = 10
+# Deal initial cards
+player_cards = [deck.pop(), deck.pop()]
+dealer_cards = [deck.pop(), deck.pop()]
 
-# Snake starting position and direction
-snake_pos = [100, 50]
-snake_body = [[100, 50], [90, 50], [80, 50]]
-direction = "RIGHT"
+# Calculate scores
+player_score = card_value(player_cards[0]) + card_value(player_cards[1])
+dealer_score = card_value(dealer_cards[0]) + card_value(dealer_cards[1])
 
-# Food position
-food_pos = [random.randrange(1, (WIDTH // BLOCK_SIZE)) * BLOCK_SIZE, 
-            random.randrange(1, (HEIGHT // BLOCK_SIZE)) * BLOCK_SIZE]
+# Print initial hands
+print(f"Your cards: {player_cards}, current score: {player_score}")
+print(f"Dealer's first card: {dealer_cards[0]}")
 
-# Score
-score = 0
+# Determine the winner
+if player_score == 21 or dealer_score == 21:
+    print("Blackjack! You win!")
+elif player_score > 21:
+    print("Busted! You lose.")
+else:
+    while dealer_score < 17:
+        dealer_cards.append(deck.pop())
+        dealer_score += card_value(dealer_cards[-1])
+    print(f"Dealer's cards: {dealer_cards}, dealer's score: {dealer_score}")
+    if dealer_score > 21 or player_score > dealer_score:
+        print("You win!")
+    else:
+        print("Dealer wins!")
 
-# Update snake position
-def update_snake(direction, snake_body):
-    if direction == "RIGHT":
-        snake_pos[0] += BLOCK_SIZE
-    elif direction == "LEFT":
-        snake_pos[0] -= BLOCK_SIZE
-    elif direction == "UP":
-        snake_pos[1] -= BLOCK_SIZE
-    elif direction == "DOWN":
-        snake_pos[1] += BLOCK_SIZE
-    snake_body.insert(0, list(snake_pos))
-
-# Check if the snake has collided with itself or the walls
-def check_collision(snake_body):
-    if snake_pos[0] >= WIDTH or snake_pos[0] < 0 or snake_pos[1] >= HEIGHT or snake_pos[1] < 0:
-        return True
-    for block in snake_body[1:]:
-        if snake_pos == block:
-            return True
-    return False
-
-# Main game loop
-def game_loop():
-    global direction, snake_pos, snake_body, food_pos, score
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    direction = "RIGHT"
-                elif event.key == pygame.K_LEFT:
-                    direction = "LEFT"
-                elif event.key == pygame.K_UP:
-                    direction = "UP"
-                elif event.key == pygame.K_DOWN:
-                    direction = "DOWN"
-
-        update_snake(direction, snake_body)
-        
-        if snake_pos == food_pos:
-            food_pos = [random.randrange(1, (WIDTH // BLOCK_SIZE)) * BLOCK_SIZE, 
-                        random.randrange(1, (HEIGHT // BLOCK_SIZE)) * BLOCK_SIZE]
-            score += 1
-        else:
-            snake_body.pop()
-        
-        WIN.fill(WHITE)
-        for block in snake_body:
-            pygame.draw.rect(WIN, GREEN, pygame.Rect(block[0], block[1], BLOCK_SIZE, BLOCK_SIZE))
-        pygame.draw.rect(WIN, RED, pygame.Rect(food_pos[0], food_pos[1], BLOCK_SIZE, BLOCK_SIZE))
-        
-        if check_collision(snake_body):
-            pygame.quit()
-            quit()
-        
-        pygame.display.flip()
-        pygame.time.Clock().tick(snake_speed)
-
-game_loop()
+# Note: Run the program again to shuffle the cards and play another round.
