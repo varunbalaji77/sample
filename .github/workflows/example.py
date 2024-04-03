@@ -1,7 +1,7 @@
 import random
 
 # Set up the deck of cards
-card_categories = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+card_categories = ['Hearts', 'Diamods', 'Clubs', 'Spades']
 cards_list = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
 deck = [(card, category) for category in card_categories for card in cards_list]
 
