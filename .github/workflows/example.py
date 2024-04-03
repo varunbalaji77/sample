@@ -42,6 +42,6 @@ else:
     if dealer_score > 21 or player_score > dealer_score:
         print("You win!")
     else:
-        print("Dealer wins!")
+        print("Dealer wins!\nThank you")
 
 # Note: Run the program again to shuffle the cards and play another round.
